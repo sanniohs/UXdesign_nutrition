@@ -1,0 +1,758 @@
+@import "tailwindcss";
+
+@theme {
+  --color-neumo-bg: #E0E5EC;
+  --color-neumo-blue: #007BFF;
+  --color-neumo-text-main: #333333;
+  --color-neumo-text-sub: #777777;
+
+  --shadow-neumo-card: 9px 9px 16px rgba(163, 177, 198, 0.6), -9px -9px 16px rgba(255, 255, 255, 0.5);
+  --shadow-neumo-inset: inset 6px 6px 10px rgba(163, 177, 198, 0.5), inset -6px -6px 10px rgba(255, 255, 255, 0.5);
+  
+  --phone-width: 360px;
+  --phone-height: 740px;
+}
+
+@keyframes pulse-red-bg {
+  0% { background-color: #E0E5EC; }
+  50% { background-color: #F8D7D7; } /* Opaque light red/pink */
+  100% { background-color: #E0E5EC; }
+}
+
+@keyframes arrow-bounce {
+  0%, 100% { transform: translateX(0); opacity: 0.5; }
+  50% { transform: translateX(10px); opacity: 1; }
+}
+
+.animate-arrow-bounce {
+  animation: arrow-bounce 1.5s infinite ease-in-out;
+}
+
+.animate-pulse-red {
+  animation: pulse-red-bg 2s infinite ease-in-out;
+}
+
+@layer base {
+  body {
+    @apply bg-[#f0f2f5] text-neumo-text-main;
+    font-family: 'Noto Sans KR', sans-serif;
+  }
+}
+
+.perspective-1500 {
+  perspective: 1500px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+}
+
+.rotate-y-180 {
+  transform: rotateY(180deg);
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}
+
+/* 1. 설탕이 쌓일 바닥 설정 */
+.sugar-stage {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+    padding-bottom: 20px;
+}
+
+/* 2. 설탕 조각 기본 상태 (위로 숨김) */
+.cube {
+    display: inline-block;
+    font-size: 24px;
+    opacity: 0;
+    transform: translateY(-100px); /* 위에서 대기 */
+    transition: all 0.4s cubic-bezier(0.47, 0, 0.745, 0.715); /* 툭 떨어지는 느낌 */
+}
+
+/* 3. 클릭(체크박스 체크) 시 순차 낙하 실행 */
+#sugar-flip:checked + .flip-card-inner .cube,
+.is-flipped .cube {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 4. 시간차 공격 (각설탕마다 지연 시간을 다르게) */
+.c1 { transition-delay: 0.1s; }
+.c2 { transition-delay: 0.2s; }
+.c3 { transition-delay: 0.3s; }
+.c4 { transition-delay: 0.4s; }
+.c5 { transition-delay: 0.5s; }
+.c6 { transition-delay: 0.6s; }
+.c7 { transition-delay: 0.7s; }
+.c8 { transition-delay: 0.8s; }
+.c9 { transition-delay: 0.9s; }
+.c10 { transition-delay: 1.0s; }
+
+.sugar-info {
+    margin-top: 15px;
+    font-size: 0.8rem;
+    color: #666;
+    font-weight: bold;
+}
+
+.carbo { background-color: #000181; color: white; }
+.protein { background-color: #E8A0FF; color: #333; }
+.fat { background-color: #006EE9; color: white; }
+
+.balance-chart {
+    display: flex;
+    width: 90%;
+    height: 35px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.nutrition-diagram {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.circular-chart {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    /* 탄 78%, 단 10%, 지 12% */
+    /* 탄: 0% to 78% */
+    /* 단: 78% to 88% */
+    /* 지: 88% to 100% */
+    background: conic-gradient(
+        #000181 0% 78%,
+        #E8A0FF 78% 88%,
+        #006EE9 88% 100%
+    );
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+/* Donut hole */
+.circular-chart::after {
+    content: "";
+    width: 70px;
+    height: 70px;
+    background: white;
+    border-radius: 50%;
+    position: absolute;
+}
+
+.chart-legend {
+    display: flex;
+    gap: 12px;
+    margin-top: 15px;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+/* 밥공기 컨테이너 디자인 */
+.rice-bowl-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    font-size: 80px; /* 🍚 이모지 크기 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden; /* 공기 밖으로 밥이 안 나가게 함 */
+}
+
+/* 밥이 차오르는 효과 (파란색 또는 흰색 오버레이) */
+.rice-level {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 0%; /* 초기 상태: 밥이 없음 */
+    background-color: rgba(0, 1, 129, 0.2); /* 탄수화물 고정 컬러(#000181) 연하게 활용 */
+    transition: height 1.5s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    border-top: 3px solid #000181; /* 밥이 차오르는 경계선 */
+}
+
+.info-text {
+    text-align: center;
+    z-index: 2;
+}
+
+/* 전체 레이아웃 */
+.app-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* 부모 컨테이너(Phone Viewport) 내에서 꽉 차게 */
+    background-color: #f4f4f9;
+}
+
+.main-content {
+    flex: 1; /* 남은 공간 모두 차지 */
+    overflow-y: auto; /* 내용 많으면 스크롤 */
+    padding: 20px;
+    padding-bottom: 80px; /* 하단 바 높이만큼 여백 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* 수직 중앙 정렬 */
+}
+
+.screen-title {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 30px;
+    font-weight: bold;
+    text-align: center; /* 텍스트 중앙 정렬 */
+}
+
+/* 📊 데이터 탭 전용 스타일 (비빔밥 카드 주변) */
+.temp-card {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    color: #888;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+}
+
+/* 🔍 탐색 탭 전용 스타일 (그리드) */
+.category-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 0 5px;
+}
+
+.category-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+    background: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+    transition: all 0.2s;
+    border: 1px solid rgba(255,255,255,0.5);
+}
+
+.category-item:active { transform: scale(0.98); background: #f8f9fa; }
+
+.icon-box {
+    width: 44px; height: 44px;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 24px; /* 이모지 크기 축소 */
+    margin-right: 15px;
+    margin-bottom: 0;
+}
+
+.icon-box img { width: 100%; height: auto; } /* 이미지 크기 조절 */
+
+.category-item span { 
+    font-size: 15px; 
+    color: #333; 
+    font-weight: 800;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ⬇️ 하단 내비게이션 바 스타일 (image_2.png 기반) */
+.bottom-nav {
+    position: absolute; /* Phone Viewport 내부에 고정하기 위해 absolute 사용 */
+    bottom: 0; left: 0;
+    width: 100%;
+    height: 70px;
+    background: #e9ecf3; /* 이미지의 연한 푸른빛 회색 배경 */
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #d1d9e6;
+    z-index: 100;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    color: #8e9aaf; /* 비활성화된 탭 컬러 (회색) */
+    width: 80px;
+}
+
+.nav-icon { font-size: 20px; margin-bottom: 4px; }
+.nav-label { font-size: 0.75rem; }
+
+/* ✅ 선택된 탭 스타일 (중앙 '데이터' 탭 강조 컬러) */
+.nav-item.active {
+    color: #007aff; /* 이미지의 선명한 파란색 컬러 */
+    font-weight: bold;
+}
+
+/* 🎮 메인 화면 (다마고치) 스타일 */
+.screen {
+    padding: 20px;
+    padding-top: 40px;
+    padding-bottom: 90px;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.mission-header {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.mission-header h2 {
+    font-size: 20px; /* Restored slightly larger size */
+    font-weight: 900;
+    color: #007aff;
+    margin-bottom: 4px;
+}
+
+.mission-header p {
+    font-size: 13px;
+    color: #666;
+}
+
+.character-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.food-drag-section {
+    width: 100%;
+    margin-top: auto;
+    margin-bottom: 70px; /* Reduced from 140px to bring cards back down slightly */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.food-drag-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px; /* Reduced from 10px */
+    width: 100%;
+    margin-bottom: 8px; /* Reduced from 10px */
+}
+
+.food-drag-item {
+    background: white;
+    border-radius: 15px;
+    padding: 10px 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    cursor: grab;
+    touch-action: none;
+}
+
+.food-drag-item:active {
+    cursor: grabbing;
+}
+
+.drag-hint {
+    font-size: 11px;
+    color: #999;
+    font-weight: bold;
+}
+
+.character-visual {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.character-img {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.status-bubble {
+    background: white;
+    padding: 12px 20px;
+    border-radius: 20px;
+    font-size: 14px;
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+    font-weight: bold;
+    color: #333;
+    pointer-events: none;
+}
+
+.status-bubble::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -10px;
+    transform: translateX(-50%);
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 10px solid white;
+    border-top: none;
+}
+
+.character-profile {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.5);
+    padding: 10px 15px;
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+}
+
+.character-profile h3 {
+    font-size: 14px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #333;
+    opacity: 0.8;
+}
+
+.character-profile ul {
+    list-style: none;
+    padding: 0;
+}
+
+.character-profile li {
+    font-size: 13px;
+    margin-bottom: 6px;
+    color: #555;
+}
+
+/* 🖼️ 모달 스타일 */
+.modal {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+}
+
+.modal.hidden { display: none; }
+
+.card-container {
+    background: white;
+    width: 100%;
+    height: 90%;
+    border-radius: 30px 30px 0 0;
+    position: relative;
+    padding: 30px 20px;
+    overflow-y: auto;
+}
+
+.close-btn {
+    position: absolute;
+    top: 20px; right: 20px;
+    background: #f0f2f5;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.layer {
+    margin-bottom: 40px;
+    text-align: center;
+}
+
+.layer-summary img {
+    width: 150px;
+    height: 150px;
+    object-contain: contain;
+    margin-bottom: 15px;
+}
+
+.layer-summary h2 {
+    font-size: 22px;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.layer-summary p {
+    font-size: 16px;
+    color: #666;
+    font-weight: bold;
+}
+
+.swipe-hint {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 10px;
+}
+
+.layer-nutrition h3, .layer-ingredients h3 {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.bar-chart {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.bar-chart .label {
+    width: 60px;
+    font-size: 13px;
+    text-align: left;
+}
+
+.bar-bg {
+    flex: 1;
+    height: 10px;
+    background: #f0f2f5;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.bar {
+    height: 100%;
+    background: #007aff;
+    width: 0%;
+    transition: width 0.5s ease-out;
+}
+
+#sodium-pct {
+    width: 35px;
+    font-size: 12px;
+    font-weight: bold;
+    color: #007aff;
+}
+
+.layer-ingredients p {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.6;
+    text-align: left;
+}
+
+.warning {
+    background: #fff0f0;
+    color: #ff4d4d;
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.warning.hidden { display: none; }
+
+.feed-btn {
+    width: 100%;
+    background: #007aff;
+    color: white;
+    border: none;
+    padding: 18px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-top: 30px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(0,122,255,0.2);
+}
+
+/* 스캐닝 화면 스타일 */
+.scanning-screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    background-color: #E0E5EC;
+}
+
+.scanning-container {
+    position: relative;
+    width: 200px; /* 파동이 퍼져나갈 영역 */
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 중앙 캐릭터 아이콘 */
+.center-icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    z-index: 2; /* 파동보다 위에 배치 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    background: white;
+}
+
+.center-icon img {
+    width: 100%;
+    height: auto;
+}
+
+/* 🆕 퍼져나가는 파동 (Wave) 공통 스타일 */
+.wave {
+    position: absolute;
+    border-radius: 50%;
+    background-color: rgba(0, 122, 255, 0.1); /* 토스 특유의 연한 파란색 */
+    border: 1px solid rgba(0, 122, 255, 0.2);
+    opacity: 0;
+    z-index: 1;
+    /* 7. 애니메이션 정의: pulse라는 규칙을 1.5초 동안 무한 반복 */
+    animation: pulse 1.5s infinite ease-out;
+}
+
+/* 개별 파동 크기 및 시작 시간 차이 (자연스러운 펄스 유도) */
+.wave1 { width: 100px; height: 100px; animation-delay: 0s; }
+.wave2 { width: 150px; height: 150px; animation-delay: 0.5s; }
+.wave3 { width: 200px; height: 200px; animation-delay: 1.0s; }
+
+/* 8. 펄스 애니메이션 핵심 규칙 (scale과 opacity 조절) */
+@keyframes pulse {
+    0% {
+        transform: scale(0.5); /* 작게 시작 */
+        opacity: 1; /* 투명도 가득 */
+    }
+    100% {
+        transform: scale(1.5); /* 1.5배까지 확장 */
+        opacity: 0; /* 완전히 투명해짐 */
+    }
+}
+
+.scanning-text {
+    margin-top: 30px;
+    font-size: 1rem;
+    color: #666;
+    font-weight: 500;
+}
+
+/* 알러지 결과 화면 스타일 */
+.allergy-result-container {
+    position: absolute;
+    inset: 0;
+    z-index: 120;
+    background-color: #E0E5EC;
+    padding: 30px 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.result-title {
+    font-size: 1.1rem;
+    font-weight: 900;
+    color: #333;
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.allergy-list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+    max-width: 330px;
+}
+
+.allergy-card {
+    background: white;
+    padding: 12px 10px;
+    border-radius: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    text-align: center;
+}
+
+.item-icon {
+    font-size: 22px;
+}
+
+.item-name {
+    font-size: 13px;
+    font-weight: bold;
+    color: #444;
+    white-space: nowrap;
+}
+
+/* 순차 등장 애니메이션 */
+.morph-item {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 0.5s forwards ease-out;
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.reset-btn {
+    margin-top: 40px;
+    width: 100%;
+    max-width: 200px;
+    padding: 15px;
+    background: #007aff;
+    color: white;
+    border-radius: 20px;
+    font-weight: 900;
+    box-shadow: 0 10px 20px rgba(0,122,255,0.2);
+    cursor: pointer;
+    border: none;
+}
+
+.reset-btn:active {
+    transform: scale(0.95);
+}
